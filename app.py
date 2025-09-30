@@ -9,34 +9,32 @@ from pathlib import Path
 # =========================
 # 🔧 CONFIG (edit as needed)
 # =========================
-P_RATING_W = 1.0       # 1 W resistors
-V_SUPPLY   = 120.0     # volts for the "at 120 V" questions
+V_SUPPLY = 120.0  # volts for the "at 120 V" questions
 
 # Tolerances (percentage of expected)
-TOL_R_PCT     = 5.0    # measured R within ±5% of your measured reference
-TOL_VMAX_PCT  = 5.0
-TOL_I120_PCT  = 5.0
-TOL_P120_PCT  = 5.0
+TOL_R_PCT    = 5.0   # measured R within ±5% of instructor-measured reference (kΩ basis)
+TOL_VMAX_PCT = 5.0
+TOL_I120_PCT = 5.0
+TOL_P120_PCT = 5.0
 
-# "Almost" = within 2× tolerance but not quite within main tolerance
+# "Almost" = within 2× tolerance but not within main tolerance
 ALMOST_MULT = 2.0
 
 # Apps Script endpoint is stored in Streamlit Secrets
-# .streamlit/secrets.toml should have:
+# .streamlit/secrets.toml:
 # [apps_script]
 # resistor_url = "https://script.google.com/macros/s/XXXX/exec"
 APPS_SCRIPT_URL = st.secrets["apps_script"]["resistor_url"]
 
-# =======================================
-# 📦 Your resistor catalog (measured data)
-# index: {"R_nom": ..., "R_meas": ...}  (ohms)
-# =======================================
-# Load resistor data from JSON
+# =========================
+# 📦 Load resistor catalog
+# Expect R_nom, R_meas in kΩ and P_rating_W in W.
+# =========================
 with open(Path("data/resistors.json"), "r") as f:
-    RESISTORS = json.load(f)
+    RESISTORS = json.load(f)  # keys are "1"..."40"
 
 # =========================
-# 🧮 Helper functions
+# 🧮 Helpers
 # =========================
 def pct_close(student_val: float, target_val: float, tol_pct: float) -> bool:
     if target_val == 0:
@@ -55,10 +53,10 @@ def verdict_icon(ok: bool, almost: bool = False) -> str:
         return "⚠️"
     return "❌"
 
-def expected_from_measured(R_meas: float):
-    Vmax = sqrt(P_RATING_W * R_meas)      # sqrt(P * R)
-    I120 = V_SUPPLY / R_meas              # V / R
-    P120 = (V_SUPPLY * V_SUPPLY) / R_meas # V^2 / R
+def expected_from_measured(R_meas_ohm: float, P_rating_W: float):
+    Vmax = sqrt(P_rating_W * R_meas_ohm)        # sqrt(P * R)
+    I120 = V_SUPPLY / R_meas_ohm                # V / R
+    P120 = (V_SUPPLY * V_SUPPLY) / R_meas_ohm   # V^2 / R
     return Vmax, I120, P120
 
 def log_submission(payload: dict):
@@ -75,16 +73,17 @@ st.set_page_config(page_title="PHY 132 – Resistor Checker", page_icon="🧪")
 st.title("PHY 132 – Resistor Power & Ohm’s Law Checker")
 st.write("Enter your values based on the resistor you were assigned. You’ll get instant feedback; correct submissions are recorded for credit.")
 
-with st.expander("📘 What does the 1 W rating mean?"):
+with st.expander("📘 What does the power rating mean?"):
     st.markdown(
-        "The **1 W** rating is the **maximum safe power** the resistor can dissipate. "
+        "The **power rating** (e.g., **1 W** or **0.5 W**) is the **maximum safe power** the resistor can dissipate. "
         "Actual power depends on the applied voltage and current: "
-        r"$P = VI = I^2R = \dfrac{V^2}{R}$."
+        r"$P = VI = I^2R = \dfrac{V^2}{R}$. "
+        "For each resistor below, we use its specific rating from the catalog to compute the safe maximum voltage."
     )
 
 colA, colB = st.columns(2)
 with colA:
-    student_name  = st.text_input("Name (for credit)")
+    student_name    = st.text_input("Name (for credit)")
 with colB:
     student_comment = st.text_input("Comment (optional)")
 
@@ -96,8 +95,9 @@ if not rinfo:
 # Reference (in kΩ from JSON)
 R_ref_kohm = float(rinfo["R_meas"])
 R_ref_ohm  = R_ref_kohm * 1e3
+P_rating_W   = float(rinfo.get("P_rating_W", 1.0))  # default to 1 W if missing
 
-st.info(f"Your resistor number: **{res_num}**.")
+st.info(f"Resistor #{res_num} — **Rating:** {P_rating_W:g} W")
 
 st.subheader("Enter your measured/calculated values")
 c1, c2 = st.columns(2)
