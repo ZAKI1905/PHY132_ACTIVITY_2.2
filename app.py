@@ -127,14 +127,14 @@ if st.button("Check my answers"):
     any_almost  = r_almost or vmax_almost or i120_almost or p120_almost
 
     st.markdown("### Results")
-    st.write(f"{verdict_icon(r_ok, r_almost)} **Measured R** — "
-             f"yours: {R_student_kohm:.6g} kΩ | expected: {R_ref_kohm:.6g} Ω (±{TOL_R_PCT:.0f}%)")
-    st.write(f"{verdict_icon(vmax_ok, vmax_almost)} **V_max** — "
-             f"yours: {Vmax:.6g} V | expected: {Vmax_exp:.6g} V (±{TOL_VMAX_PCT:.0f}%)")
-    st.write(f"{verdict_icon(i120_ok, i120_almost)} **I at 120 V** — "
-             f"yours: {I_120:.6g} A | expected: {I120_exp:.6g} A (±{TOL_I120_PCT:.0f}%)")
-    st.write(f"{verdict_icon(p120_ok, p120_almost)} **P at 120 V** — "
-             f"yours: {P_120:.6g} W | expected: {P120_exp:.6g} W (±{TOL_P120_PCT:.0f}%)")
+    st.write(f"{verdict_icon(r_ok, r_almost)} **Measured R**")
+            #  f" - yours: {R_student_kohm:.6g} kΩ | expected: {R_ref_kohm:.6g} Ω (±{TOL_R_PCT:.0f}%)")
+    st.write(f"{verdict_icon(vmax_ok, vmax_almost)} **V_max**")
+            #  f" - yours: {Vmax:.6g} V | expected: {Vmax_exp:.6g} V (±{TOL_VMAX_PCT:.0f}%)")
+    st.write(f"{verdict_icon(i120_ok, i120_almost)} **I at 120 V**")
+            #  f" - yours: {I_120:.6g} A | expected: {I120_exp:.6g} A (±{TOL_I120_PCT:.0f}%)")
+    st.write(f"{verdict_icon(p120_ok, p120_almost)} **P at 120 V**")
+            #  f" - yours: {P_120:.6g} W | expected: {P120_exp:.6g} W (±{TOL_P120_PCT:.0f}%)")
 
     if all_correct:
         st.success("✅ All correct! Your submission has been recorded for full credit.")
@@ -148,19 +148,19 @@ if st.button("Check my answers"):
 
     # Log to Google Sheets via Apps Script
     payload = {
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "Time Stamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         # "sheet": "2.2-Resistors",   # handle this sheet name in your Apps Script
         # "secret": st.secrets["apps_script"].get("shared_secret", ""),
-        "name": student_name,
-        "comment": student_comment,
-        "resistor_number": str(int(res_num)),
+        "Name": student_name,
+        "Comment": student_comment,
+        "Resistor #": str(int(res_num)),
         "R_ref_kohm": R_ref_kohm,
         "R_student_kohm": R_student_kohm,
         "Vmax_V": Vmax,
-        "I_120V_A": I_120,
-        "P_120V_W": P_120,
         "Vmax_exp_V": Vmax_exp,
-        "I120_exp_A": I120_exp,
+        "I_120V_A": I_120,
+		"I120_exp_A": I120_exp,
+        "P_120V_W": P_120,
         "P120_exp_W": P120_exp,
         # "tolerances_pct": {
         #     "R": TOL_R_PCT,
