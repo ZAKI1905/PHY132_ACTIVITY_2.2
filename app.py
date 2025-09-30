@@ -144,8 +144,8 @@ if st.button("Check my answers"):
     # Log to Google Sheets via Apps Script
     payload = {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "sheet": "2.2-Resistors",   # handle this sheet name in your Apps Script
-        "secret": st.secrets["apps_script"].get("shared_secret", ""),
+        # "sheet": "2.2-Resistors",   # handle this sheet name in your Apps Script
+        # "secret": st.secrets["apps_script"].get("shared_secret", ""),
         "name": student_name,
         "email": student_email,
         "resistor_number": str(int(res_num)),
@@ -157,14 +157,15 @@ if st.button("Check my answers"):
         "Vmax_exp_V": Vmax_exp,
         "I120_exp_A": I120_exp,
         "P120_exp_W": P120_exp,
-        "tolerances_pct": {
-            "R": TOL_R_PCT,
-            "Vmax": TOL_VMAX_PCT,
-            "I120": TOL_I120_PCT,
-            "P120": TOL_P120_PCT
-        },
+        # "tolerances_pct": {
+        #     "R": TOL_R_PCT,
+        #     "Vmax": TOL_VMAX_PCT,
+        #     "I120": TOL_I120_PCT,
+        #     "P120": TOL_P120_PCT
+        # },
         "result": result_label
     }
+    
     status, resp = log_submission(payload)
     if status != 200:
         st.info("Note: logging issue encountered. Your local check ran fine—please try again soon or notify your instructor.")
