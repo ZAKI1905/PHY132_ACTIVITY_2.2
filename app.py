@@ -128,7 +128,7 @@ if st.button("Check my answers"):
 
     st.markdown("### Results")
     st.write(f"{verdict_icon(r_ok, r_almost)} **Measured R** — "
-             f"yours: {R_student_kohm:.6g} kΩ | expected: {R_ref:.6g} Ω (±{TOL_R_PCT:.0f}%)")
+             f"yours: {R_student_kohm:.6g} kΩ | expected: {R_ref_kohm:.6g} Ω (±{TOL_R_PCT:.0f}%)")
     st.write(f"{verdict_icon(vmax_ok, vmax_almost)} **V_max** — "
              f"yours: {Vmax:.6g} V | expected: {Vmax_exp:.6g} V (±{TOL_VMAX_PCT:.0f}%)")
     st.write(f"{verdict_icon(i120_ok, i120_almost)} **I at 120 V** — "
