@@ -112,7 +112,7 @@ I_120  = I_120_mA * 1e-3
 P_120  = P_120_mW * 1e-3
 
 # Expected values from the INSTRUCTOR-MEASURED resistance (convert to Ω for physics)
-Vmax_exp, I120_exp, P120_exp = expected_from_measured(R_ref_ohm)
+Vmax_exp, I120_exp, P120_exp = expected_from_measured(R_ref_ohm, P_rating_W)
 
 if st.button("Check my answers"):
     # Part checks vs expected derived from instructor-measured R
