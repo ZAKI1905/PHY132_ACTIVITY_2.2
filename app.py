@@ -88,7 +88,7 @@ with colA:
 with colB:
     student_comment = st.text_input("Comment (optional)")
 
-res_num = st.number_input("Enter your resistor number (1–30)", min_value=1, max_value=30, step=1)
+res_num = st.number_input("Enter your resistor number (1–40)", min_value=1, max_value=40, step=1)
 rinfo = RESISTORS.get(str(int(res_num)))
 if not rinfo:
     st.stop()
@@ -102,11 +102,14 @@ st.info(f"Your resistor number: **{res_num}**.")
 st.subheader("Enter your measured/calculated values")
 c1, c2 = st.columns(2)
 with c1:
-    R_student_kohm = st.number_input("Measured resistance R (kΩ)", min_value=0.0, step=0.01, format="%.6f")
-    Vmax      = st.number_input("Maximum safe voltage V_max (V)", min_value=0.0, step=0.01, format="%.6f")
+    R_student_kohm = st.number_input("Measured resistance R (kΩ)", min_value=0.0, step=0.01, format="%.2f")
+    Vmax      = st.number_input("Maximum safe voltage V_max (V)", min_value=0.0, step=0.01, format="%.2f")
 with c2:
-    I_120     = st.number_input("Current at 120 V (A)", min_value=0.0, step=0.000001, format="%.9f")
-    P_120     = st.number_input("Power at 120 V (W)",  min_value=0.0, step=0.000001, format="%.9f")
+    I_120_mA     = st.number_input("Current at 120 V (mA)", min_value=0.0, step=0.001, format="%.3f")
+    P_120_mW     = st.number_input("Power at 120 V (mW)",  min_value=0.0, step=0.01, format="%.2f")
+
+I_120  = I_120_mA * 1e-3
+P_120  = P_120_mW * 1e-3
 
 # Expected values from the INSTRUCTOR-MEASURED resistance (convert to Ω for physics)
 Vmax_exp, I120_exp, P120_exp = expected_from_measured(R_ref_ohm)
@@ -154,14 +157,14 @@ if st.button("Check my answers"):
         "Name": student_name,
         "Comment": student_comment,
         "Resistor #": str(int(res_num)),
-        "R_ref_kohm": R_ref_kohm,
-        "R_student_kohm": R_student_kohm,
-        "Vmax_V": Vmax,
-        "Vmax_exp_V": Vmax_exp,
-        "I_120V_A": I_120,
-		"I120_exp_A": I120_exp,
-        "P_120V_W": P_120,
-        "P120_exp_W": P120_exp,
+        "R_ref (kΩ)": R_ref_kohm,
+        "R_student (kΩ)": R_student_kohm,
+        "Vmax (V)": Vmax,
+        "Vmax_exp (V)": Vmax_exp,
+        "I_120V (mA)": I_120,
+		"I120_exp (mA)": I120_exp,
+        "P_120V (mW)": P_120,
+        "P120_exp (mW)": P120_exp,
         # "tolerances_pct": {
         #     "R": TOL_R_PCT,
         #     "Vmax": TOL_VMAX_PCT,
