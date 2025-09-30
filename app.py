@@ -144,7 +144,8 @@ if st.button("Check my answers"):
     # Log to Google Sheets via Apps Script
     payload = {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "sheet": "Resistor_Submissions",   # handle this sheet name in your Apps Script
+        "sheet": "2.2-Resistors",   # handle this sheet name in your Apps Script
+        "secret": st.secrets["apps_script"].get("shared_secret", ""),
         "name": student_name,
         "email": student_email,
         "resistor_number": str(int(res_num)),
