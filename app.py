@@ -3,6 +3,8 @@ import streamlit as st
 import requests
 from datetime import datetime
 from math import sqrt
+import json
+from pathlib import Path
 
 # =========================
 # 🔧 CONFIG (edit as needed)
@@ -29,38 +31,9 @@ APPS_SCRIPT_URL = st.secrets["apps_script"]["resistor_url"]
 # 📦 Your resistor catalog (measured data)
 # index: {"R_nom": ..., "R_meas": ...}  (ohms)
 # =======================================
-RESISTORS = {
-    1:  {"R_nom": 39.0,  "R_meas": 38.0},
-    2:  {"R_nom": 39.0,  "R_meas": 38.1},
-    3:  {"R_nom": 47.0,  "R_meas": 45.9},
-    4:  {"R_nom": 47.0,  "R_meas": 45.7},
-    5:  {"R_nom": 56.0,  "R_meas": 54.8},
-    6:  {"R_nom": 56.0,  "R_meas": 55.3},
-    7:  {"R_nom": 75.0,  "R_meas": 74.1},
-    8:  {"R_nom": 75.0,  "R_meas": 72.5},
-    9:  {"R_nom": 82.0,  "R_meas": 80.0},
-    10: {"R_nom": 82.0,  "R_meas": 78.8},
-    11: {"R_nom": 100.0, "R_meas": 97.0},
-    12: {"R_nom": 100.0, "R_meas": 98.6},
-    13: {"R_nom": 150.0, "R_meas": 147.8},
-    14: {"R_nom": 150.0, "R_meas": 148.7},
-    15: {"R_nom": 200.0, "R_meas": 193.5},
-    16: {"R_nom": 200.0, "R_meas": 193.6},
-    17: {"R_nom": 270.0, "R_meas": 267.0},
-    18: {"R_nom": 270.0, "R_meas": 264.0},
-    19: {"R_nom": 330.0, "R_meas": 323.0},
-    20: {"R_nom": 330.0, "R_meas": 323.0},
-    21: {"R_nom": 390.0, "R_meas": 376.0},
-    22: {"R_nom": 390.0, "R_meas": 395.0},
-    23: {"R_nom": 470.0, "R_meas": 527.0},
-    24: {"R_nom": 470.0, "R_meas": 487.0},
-    25: {"R_nom": 560.0, "R_meas": 544.0},
-    26: {"R_nom": 560.0, "R_meas": 572.0},
-    27: {"R_nom": 750.0, "R_meas": 729.0},
-    28: {"R_nom": 750.0, "R_meas": 749.0},
-    29: {"R_nom": 820.0, "R_meas": 828.0},
-    30: {"R_nom": 820.0, "R_meas": 814.0},
-}
+# Load resistor data from JSON
+with open(Path("data/resistors.json"), "r") as f:
+    RESISTORS = json.load(f)
 
 # =========================
 # 🧮 Helper functions
@@ -116,7 +89,7 @@ with colB:
     student_email = st.text_input("EKU email (optional)")
 
 res_num = st.number_input("Enter your resistor number (1–30)", min_value=1, max_value=30, step=1)
-rinfo = RESISTORS.get(int(res_num))
+rinfo = RESISTORS.get(str(int(res_num)))
 R_ref = rinfo["R_meas"]
 
 st.info(f"Your resistor number: **{res_num}**. (Checking against instructor-measured value ≈ **{R_ref:.4g} Ω**.)")
@@ -174,7 +147,7 @@ if st.button("Check my answers"):
         "sheet": "Resistor_Submissions",   # handle this sheet name in your Apps Script
         "name": student_name,
         "email": student_email,
-        "resistor_number": int(res_num),
+        "resistor_number": str(int(res_num)),
         "R_ref_ohm": R_ref,
         "R_student_ohm": R_student,
         "Vmax_V": Vmax,
