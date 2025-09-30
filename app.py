@@ -92,7 +92,7 @@ res_num = st.number_input("Enter your resistor number (1–30)", min_value=1, ma
 rinfo = RESISTORS.get(str(int(res_num)))
 R_ref = rinfo["R_meas"]
 
-st.info(f"Your resistor number: **{res_num}**. (Checking against instructor-measured value ≈ **{R_ref:.4g} Ω**.)")
+st.info(f"Your resistor number: **{res_num}**.")
 
 st.subheader("Enter your measured/calculated values")
 c1, c2 = st.columns(2)
