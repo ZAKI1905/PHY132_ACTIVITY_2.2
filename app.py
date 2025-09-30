@@ -84,36 +84,41 @@ with st.expander("📘 What does the 1 W rating mean?"):
 
 colA, colB = st.columns(2)
 with colA:
-    student_name  = st.text_input("Name (optional but recommended)")
+    student_name  = st.text_input("Name (for credit)")
 with colB:
-    student_email = st.text_input("EKU email (optional)")
+    student_comment = st.text_input("Comment (optional)")
 
 res_num = st.number_input("Enter your resistor number (1–30)", min_value=1, max_value=30, step=1)
 rinfo = RESISTORS.get(str(int(res_num)))
-R_ref = rinfo["R_meas"]
+if not rinfo:
+    st.stop()
+    
+# Reference (in kΩ from JSON)
+R_ref_kohm = float(rinfo["R_meas"])
+R_ref_ohm  = R_ref_kohm * 1e3
 
 st.info(f"Your resistor number: **{res_num}**.")
 
 st.subheader("Enter your measured/calculated values")
 c1, c2 = st.columns(2)
 with c1:
-    R_student = st.number_input("Measured resistance R (Ω)", min_value=0.0, step=0.001, format="%.6f")
-    Vmax      = st.number_input("Maximum safe voltage V_max (V)", min_value=0.0, step=0.001, format="%.6f")
+    R_student_kohm = st.number_input("Measured resistance R (kΩ)", min_value=0.0, step=0.01, format="%.6f")
+    Vmax      = st.number_input("Maximum safe voltage V_max (V)", min_value=0.0, step=0.01, format="%.6f")
 with c2:
     I_120     = st.number_input("Current at 120 V (A)", min_value=0.0, step=0.000001, format="%.9f")
     P_120     = st.number_input("Power at 120 V (W)",  min_value=0.0, step=0.000001, format="%.9f")
 
-# Expected values from the INSTRUCTOR-MEASURED resistance
-Vmax_exp, I120_exp, P120_exp = expected_from_measured(R_ref)
+# Expected values from the INSTRUCTOR-MEASURED resistance (convert to Ω for physics)
+Vmax_exp, I120_exp, P120_exp = expected_from_measured(R_ref_ohm)
 
 if st.button("Check my answers"):
     # Part checks vs expected derived from instructor-measured R
-    r_ok     = pct_close(R_student, R_ref,     TOL_R_PCT)
+    r_ok     = pct_close(R_student_kohm, R_ref_kohm,     TOL_R_PCT)
     vmax_ok  = pct_close(Vmax,      Vmax_exp,  TOL_VMAX_PCT)
     i120_ok  = pct_close(I_120,     I120_exp,  TOL_I120_PCT)
     p120_ok  = pct_close(P_120,     P120_exp,  TOL_P120_PCT)
 
-    r_almost     = almost_within(R_student, R_ref,     TOL_R_PCT)
+    r_almost     = almost_within(R_student_kohm, R_ref_kohm,     TOL_R_PCT)
     vmax_almost  = almost_within(Vmax,      Vmax_exp,  TOL_VMAX_PCT)
     i120_almost  = almost_within(I_120,     I120_exp,  TOL_I120_PCT)
     p120_almost  = almost_within(P_120,     P120_exp,  TOL_P120_PCT)
@@ -123,7 +128,7 @@ if st.button("Check my answers"):
 
     st.markdown("### Results")
     st.write(f"{verdict_icon(r_ok, r_almost)} **Measured R** — "
-             f"yours: {R_student:.6g} Ω | expected: {R_ref:.6g} Ω (±{TOL_R_PCT:.0f}%)")
+             f"yours: {R_student_kohm:.6g} kΩ | expected: {R_ref:.6g} Ω (±{TOL_R_PCT:.0f}%)")
     st.write(f"{verdict_icon(vmax_ok, vmax_almost)} **V_max** — "
              f"yours: {Vmax:.6g} V | expected: {Vmax_exp:.6g} V (±{TOL_VMAX_PCT:.0f}%)")
     st.write(f"{verdict_icon(i120_ok, i120_almost)} **I at 120 V** — "
@@ -147,10 +152,10 @@ if st.button("Check my answers"):
         # "sheet": "2.2-Resistors",   # handle this sheet name in your Apps Script
         # "secret": st.secrets["apps_script"].get("shared_secret", ""),
         "name": student_name,
-        "email": student_email,
+        "comment": student_comment,
         "resistor_number": str(int(res_num)),
-        "R_ref_ohm": R_ref,
-        "R_student_ohm": R_student,
+        "R_ref_kohm": R_ref_kohm,
+        "R_student_kohm": R_student_kohm,
         "Vmax_V": Vmax,
         "I_120V_A": I_120,
         "P_120V_W": P_120,
